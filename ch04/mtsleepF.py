@@ -2,7 +2,7 @@
 
 from atexit import register
 from random import randrange
-from threading import Thread, Lock, currentThread
+from threading import Thread, Lock, current_thread, enumerate, active_count
 from time import sleep, ctime
 
 class CleanOutputSet(set):
@@ -10,22 +10,24 @@ class CleanOutputSet(set):
         return ', '.join(x for x in self)
 
 lock = Lock()
-loops = (randrange(2, 5) for x in xrange(randrange(3, 7)))
+loops = (3 for x in xrange(randrange(3, 7)))
 remaining = CleanOutputSet()
 
 def loop(nsec):
-    myname = currentThread().name
-    lock.acquire()
-    remaining.add(myname)
-    print '[%s] Started %s' % (ctime(), myname) #print '[{0}] Started {1}'.format(ctime(), myname)
-    lock.release()
+    myname= current_thread().name
+    # lock.acquire()
+    with lock:
+        remaining.add(myname)
+        print '[%s] Started %s' % (ctime(), myname) #print '[{0}] Started {1}'.format(ctime(), myname)
+    # lock.release()
     sleep(nsec)
-    lock.acquire()
-    remaining.remove(myname)
-    print '[%s] Completed %s (%d secs)' % ( #print '[{0}] Completed {1} ({2} secs)'.format(
-        ctime(), myname, nsec)
-    print '    (remaining: %s)' % (remaining or 'NONE') #print '    (remaining: {0})'.format(remaining or 'NONE')
-    lock.release()
+    # lock.acquire()
+    with lock:
+        remaining.remove(myname)
+        print '[%s] Completed %s (%d secs)' % ( #print '[{0}] Completed {1} ({2} secs)'.format(
+            ctime(), myname, nsec)
+        print '    (remaining: %s)' % (remaining or 'NONE') #print '    (remaining: {0})'.format(remaining or 'NONE')
+    # lock.release()
 
 def _main():
     for pause in loops:
