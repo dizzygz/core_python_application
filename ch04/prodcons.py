@@ -1,9 +1,14 @@
 #!/usr/bin/env python
+# -*- coding:utf-8 -*-
+
 
 from random import randrange
 from time import sleep
 from Queue import Queue
 from myThread import MyThread
+from threading import Lock
+
+lock = Lock()
 
 def writeQ(queue):
     print 'producing object for Q...',
@@ -34,7 +39,7 @@ def main():
     threads = []
     for i in nfuncs:
         t = MyThread(funcs[i], (q, nloops), \
-            funcs[i].__name__)
+            funcs[i].__name__, True)
         threads.append(t)
 
     for i in nfuncs:
