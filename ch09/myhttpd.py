@@ -18,7 +18,7 @@ class MyHandler(BaseHTTPRequestHandler):
 
 def main():
     try:
-        server = HTTPServer(('', 80), MyHandler)
+        server = HTTPServer(('0.0.0.0', 8000), MyHandler)
         print 'Welcome to the machine...'
 	print 'Press ^C once or twice to quit'
         server.serve_forever()
